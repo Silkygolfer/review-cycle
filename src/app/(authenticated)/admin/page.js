@@ -6,6 +6,7 @@ import { AccountForm } from "@/components/admin-dashboard/account-details/accoun
 import updateAccount from "@/api/UPDATE/update-account";
 import checkSuperAdmin from "@/api/GET/permissions/get-super-admin";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import CreateClientDialogForm from "@/components/client-table/create-client-form";
 
 
 export default async function AdminPage() {
@@ -28,8 +29,8 @@ export default async function AdminPage() {
     if (success || confirmAdminRole) {
         return (
             <div className="flex mt-5 w-full">
-                <div className="px-4">
-                    <Tabs defaultValue='account' className={'min-w-[800px] max-w-[900px]'}>
+                <div className="px-4 w-full">
+                    <Tabs defaultValue='account' className={'min-w-[600px] w-full'}>
                         <TabsList className={'grid w-full grid-cols-2'}>
                             <TabsTrigger value='account'>Account Details</TabsTrigger>
                             <TabsTrigger value='clients'>Clients</TabsTrigger>
@@ -38,7 +39,10 @@ export default async function AdminPage() {
                             <AccountForm account={accountObj} updateAccount={updateAccount} />
                         </TabsContent>
                         <TabsContent value='clients'>
-                            <AdminClientsTable data={clientData} columns={adminClientColumns} />
+                            <div className="flex flex-col">
+                                <CreateClientDialogForm accountId={selectedAccount.accounts.id} />
+                                <AdminClientsTable data={clientData} columns={adminClientColumns} />
+                            </div>
                         </TabsContent>
                     </Tabs>
                 </div>

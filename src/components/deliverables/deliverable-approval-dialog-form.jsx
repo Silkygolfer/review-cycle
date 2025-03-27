@@ -68,9 +68,9 @@ export default function DeliverableApprovalDialogForm({ deliverable_id }) {
             <form action={handleAction} className="space-y-4">
                 <div className="flex w-full space-x-6">
                     {!needsRevisionComment && (
-                        <Button type='submit' className={'flex'}>Approve Deliverable</Button>
+                        <Button type='submit' disabled={isPending} className={'flex'}>{isPending ? 'Approving...' : 'Approve Deliverable'}</Button>
                     )}
-                    <Button type='button' className={'flex items-center'} variant={'destructive'} onClick={(e) => handleRevisionComment(e)}>
+                    <Button type='button' hidden={isPending} className={'flex items-center'} variant={'destructive'} onClick={(e) => handleRevisionComment(e)}>
                         {needsRevisionComment ? <ChevronDown className="transition-transform duration-300 mr-2" /> : <ChevronRight className="transition-transform duration-300 mr-2" />}
                         Request Revision
                     </Button>

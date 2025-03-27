@@ -42,7 +42,7 @@ export default function CreateUserDialogForm({ refreshPage, isOpen, setIsOpen, c
             </DialogTitle>
                 <form action={handleSubmit}>
                     <div className="flex flex-col space-y-4">
-                        <div className="flex flex-row space-x-2">
+                        {/*<div className="flex flex-row space-x-2">
                             <div className="space-y-2">
                                 <Label>First Name</Label>
                                 <Input id='user_first_name' name='user_first_name' className="" type="text" />
@@ -51,7 +51,7 @@ export default function CreateUserDialogForm({ refreshPage, isOpen, setIsOpen, c
                                 <Label>Last Name</Label>
                                 <Input id='user_last_name' name='user_last_name' className="" type="text" />
                             </div>
-                        </div>
+                        </div>*/}
                         <div className="space-y-2">
                             <Label>Email</Label>
                             <Input id='user_email' name='user_email' className="w-3/4" type="text" />

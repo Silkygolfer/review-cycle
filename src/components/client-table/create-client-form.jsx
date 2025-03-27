@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useActionState } from "react"
 import { createClientRecord } from "@/api/POST/create-client"
 
@@ -7,23 +7,29 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
+    DialogTrigger
 } from "../ui/dialog"
 
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Label } from "../ui/label"
 import { toast } from "sonner"
+import React from "react"
+import { useRouter } from "next/navigation"
 
 
 
-export default function CreateClientDialogForm({ openClientCreateForm, setOpenClientCreateForm, refreshData, accountId }) {
+export default function CreateClientDialogForm({ accountId }) {
     const [state, formAction, isPending] = useActionState(createClientRecord, { success: false })
+    const [isOpen, setisOpen] = useState(false)
+
+    const router = useRouter()
 
     useEffect(() => {
         if (state.success) {
             toast('Client created successfully!');
-            setOpenClientCreateForm(false);
-            refreshData();
+            setisOpen(false);
+            router.refresh();
         }
         if (state.error) {
             toast.error(state.error)
@@ -37,7 +43,10 @@ export default function CreateClientDialogForm({ openClientCreateForm, setOpenCl
     }
 
     return (
-        <Dialog open={openClientCreateForm} onOpenChange={setOpenClientCreateForm}>
+        <Dialog open={isOpen} onOpenChange={setisOpen}>
+            <DialogTrigger asChild>
+                <Button className={'my-2 border-1 hover:border-green-700'} variant={'outline'}>Create Client</Button>
+            </DialogTrigger>
             <DialogContent>
             <DialogTitle className={'flex justify-center'}>
                 <span>Create New Client</span>

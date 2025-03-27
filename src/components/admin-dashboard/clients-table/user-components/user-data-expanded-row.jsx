@@ -16,9 +16,6 @@ export default function ClientAssignments({ client }) {
       router.refresh();
   };
 
-  if (!client.client_assignments || client.client_assignments.length === 0) {
-    return <div className="p-4">No assigned users found</div>;
-  }
   
   return (
     <div className="p-4">
@@ -32,8 +29,8 @@ export default function ClientAssignments({ client }) {
             />
         )}
       <div className="flex w-full items-center mb-3">
-        <h3 className="text-lg font-medium">Assigned Users</h3>
-        <Button className={'flex ml-auto'} variant={'outline'} onClick={() => setIsOpen(true)}>Invite User</Button>
+        <h3 className="text-md font-medium">Assigned Users</h3>
+        <Button className={'flex ml-auto border-1 hover:border-green-700'} variant={'outline'} onClick={() => setIsOpen(true)}>Add User</Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {client.client_assignments.map((assignment, index) => {

@@ -54,14 +54,7 @@ export const adminCampaignColumns = [
         header: 'Actions',
         cell: ({ row, table }) => {
             const campaign = row.original;
-            const router = useRouter();
-
-            const handlePush = () => {
-                router.push(`/campaigns/${campaign.id}?campaign-name=${campaign.campaign_name}`)
-            }
-
             const handleDelete = async () => {
-                
                 try {
                     const result = await deleteCampaignRecord(campaign.id)
                     if (result.success) {
@@ -88,11 +81,8 @@ export const adminCampaignColumns = [
                     <DropdownMenuContent align='end'>
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleDelete}>
+                        <DropdownMenuItem variant="destructive" onClick={handleDelete}>
                             Delete Campaign
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handlePush}>
-                            View Deliverables
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

@@ -8,7 +8,7 @@ import ClientAssignments from "./user-components/user-data-expanded-row"
 export default function AdminClientsTable({ columns, data }) {
     // set state for expanded row - init with empty object
     const [expanded, setExpanded] = useState({})
-
+    
     const table = useReactTable({
         data: data,
         columns: columns,

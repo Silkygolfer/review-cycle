@@ -42,6 +42,8 @@ export default function DeliverableForm({
             if (initialData) {
                 setFileUrl(initialData.deliverable_content || '');
                 setFileUploaded(!!initialData.deliverable_content);
+                
+                // Simply pass the date strings as-is
                 setStartDate(initialData.deliverable_start_date || '');
                 setEndDate(initialData.deliverable_end_date || '');
             } else {
@@ -51,7 +53,7 @@ export default function DeliverableForm({
                 setStartDate('');
                 setEndDate('');
             }
-
+    
             // Reset form fields
             form.reset({
                 deliverable_name: initialData?.deliverable_name || '',

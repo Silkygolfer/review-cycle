@@ -6,7 +6,7 @@ export default async function getCampaignsWithDeliverables(account_id) {
     try {
         const { data: campaignData, error: campaignError } = await supabase
         .from('clients')
-        .select('*, campaigns(*, deliverables(*, review_cycles(*)))')
+        .select('*, campaigns(*, deliverables(*, review_cycles(*, users(first_name, last_name)))))')
         .eq('account_id', account_id)
         .order('submitted_at', {ascending: false, referencedTable: 'campaigns.deliverables.review_cycles'})
 

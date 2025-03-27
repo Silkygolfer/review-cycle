@@ -8,12 +8,22 @@ export default async function createRevisionRequest(prevState, formData) {
     const revision_comment = formData.get('revision_comment');
 
     try {
+        // get user
+        const { data: userData, error: userError } = await supabase
+        .auth
+        .getUser()
+
+        if (userError) {
+            return { success: false, error: userError.message }
+        }
+
         const { data: revisionData, error: revisionError } = await supabase
         .from('review_cycles')
         .insert({
             'deliverable_id': deliverable_id,
             'review_status': review_status,
-            'revision_comment': revision_comment
+            'revision_comment': revision_comment,
+            'submitted_by': userData.user.id
         })
         .select('review_status')
         .single()

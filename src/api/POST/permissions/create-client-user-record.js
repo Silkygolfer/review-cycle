@@ -3,27 +3,52 @@ import { createClient } from "@/utils/supabase/server-supabase-instance";
 
 export default async function createClientUserRecord(prevState, formData) {
     const supabase = await createClient();
-    const user_first_name = formData.get('user_first_name');
-    const user_last_name = formData.get('user_last_name')
+    // const user_first_name = formData.get('user_first_name');
+    // const user_last_name = formData.get('user_last_name')
     const user_email = formData.get('user_email')
     const client_id = formData.get('client_id')
     const account_id = formData.get('account_id')
 
-
     try {
-        // create user record
+        // try to create user record
         const { data: userData, error: userError } = await supabase
         .auth
         .admin
         .createUser({
             email: user_email,
             email_confirm: false,
-            user_metadata: {
-                'first_name': user_first_name,
-                'last_name': user_last_name,
-            },
+            // user_metadata: {
+            //    'first_name': user_first_name,
+            //    'last_name': user_last_name,
+            // },
             password: null
         })
+
+        // if existing user, get userData & add client_permissions to new client
+        if (userError.code === 'email_exists') {
+            const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', user_email)
+            .single()
+
+            if (userError) {
+                return { success: false, error: userError.message }
+            }
+
+            const { data: assignmentData, error: assignmentError } = await supabase
+            .from('client_assignments')
+            .insert({
+                'user_id': userData.id,
+                'client_id': client_id
+            })
+
+            if (assignmentError) {
+                return { success: false, error: assignmentError.message}
+            }
+
+            return { success: true }
+        };
 
         if (userError) {
             return { success: false, error: userError.message }

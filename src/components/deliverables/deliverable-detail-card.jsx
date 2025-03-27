@@ -49,11 +49,19 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
     };
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString);
+        if (!dateString) return '';
+        
+        // If the date is already in the format 'yyyy-MM-dd', we need to ensure it's parsed correctly
+        // Split the string and create a Date object with the correct parts
+        const [year, month, day] = dateString.split('-').map(Number);
+        
+        // Month is 0-indexed in JavaScript Date
+        const date = new Date(year, month - 1, day);
+        
         return date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
         });
     };
 
@@ -93,9 +101,6 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                     <Separator />
-                                    <DropdownMenuItem onClick={() => handleDelete(deliverable.id)}>
-                                        Delete Deliverable
-                                    </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => onEdit(deliverable)}>
                                         Edit Deliverable
                                     </DropdownMenuItem>
@@ -107,6 +112,10 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                                         </DialogTrigger>
                                         <RevisionHistory revisions={deliverable.review_cycles} />
                                     </Dialog>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem variant="destructive" onClick={() => handleDelete(deliverable.id)}>
+                                        Delete Deliverable
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
