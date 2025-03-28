@@ -71,7 +71,7 @@ export function UserDropdownMenu({ user }) {
                 Resend Invitation
               </DropdownMenuItem>
               <DropdownMenuItem disabled>
-                Move Clients
+                Move User
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

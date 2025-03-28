@@ -2,7 +2,8 @@ import {
     DropdownMenuItem,
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuTrigger    
+    DropdownMenuTrigger,    
+    DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 
 import { 
@@ -40,6 +41,7 @@ export default async function AppSidebarFooter({ userData, role }) {
                                         <span>Admin Center</span>
                                     </DropdownMenuItem>
                                 </Link>
+                                <DropdownMenuSeparator />
                                 <Link href='/profile'>
                                     <DropdownMenuItem>
                                         <span>Profile</span>
@@ -80,6 +82,7 @@ export default async function AppSidebarFooter({ userData, role }) {
                                         <span>Admin Center</span>
                                     </DropdownMenuItem>
                                 </Link>
+                                <DropdownMenuSeparator />
                                 <Link href='/profile'>
                                     <DropdownMenuItem>
                                         <span>Profile</span>

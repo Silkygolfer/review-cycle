@@ -6,7 +6,7 @@ import { AccountForm } from "@/components/admin-dashboard/account-details/accoun
 import updateAccount from "@/api/UPDATE/update-account";
 import checkSuperAdmin from "@/api/GET/permissions/get-super-admin";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import CreateClientDialogForm from "@/components/client-table/create-client-form";
+import CreateClientDialogForm from "@/components/admin-dashboard/create-client-form";
 
 
 export default async function AdminPage() {
