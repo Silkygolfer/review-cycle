@@ -16,6 +16,8 @@ export default function ClientAssignments({ client }) {
       router.refresh();
   };
 
+  console.log('client', client)
+
   
   return (
     <div className="p-4">
@@ -37,7 +39,7 @@ export default function ClientAssignments({ client }) {
           const user = assignment.users;
           return (
             <div key={index} className="border rounded-md p-3 relative">
-              <UserDropdownMenu user={user} />
+              <UserDropdownMenu user={user} client={client} />
               <div className="flex items-center">
                 <UserCircle className="text-blue-500 mr-2" size={20} />
                 <div className="font-medium">{user.first_name} {user.last_name}</div>

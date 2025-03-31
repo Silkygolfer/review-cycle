@@ -6,33 +6,29 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { EllipsisVerticalIcon } from "lucide-react"
-import deleteUser from "@/api/DELETE/delete-user"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import resendInvitationEmail from "@/api/POST/permissions/resend-invitation"
+import removeUserFromClient from "@/api/DELETE/delete-user-from-client"
 
-export function UserDropdownMenu({ user }) {
+export function UserDropdownMenu({ user, client }) {
   // init router for component re-render on change
   const router = useRouter();
 
   // handles user delete and client feedback messaging 
-  const handleDeleteUser = async (id) => {
-    const result = await deleteUser(id);
+  const handleDeleteUser = async ({ user_id, client_id }) => {
+    const result = await removeUserFromClient({ user_id: user_id, client_id: client_id });
     if (result.success) {
       toast.message('User deleted successfully!')
       router.refresh();
     }
     if (!result.success) {
-      toast.error('Failed to delete user: ', result?.error)
+      console.log(result.error)
+      toast.error('Failed to delete user: ' + result.error)
     }
   };
 
@@ -61,7 +57,7 @@ export function UserDropdownMenu({ user }) {
               <DropdownMenuItem disabled>
                 Edit User
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} variant="destructive">
+              <DropdownMenuItem onClick={() => handleDeleteUser({ user_id: user.id, client_id: client.id })} variant="destructive">
                 Delete User
               </DropdownMenuItem>
             </DropdownMenuGroup>

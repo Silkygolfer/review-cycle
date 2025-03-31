@@ -25,8 +25,9 @@ export default async function createClientUserRecord(prevState, formData) {
         })
 
         // if existing user, get userData & add client_permissions to new client
-        if (userError.code === 'email_exists') {
-            const { data: userData, error: userError } = await supabase
+        if (userError) {
+            if (userError.code === 'email_exists') {
+                const { data: userData, error: userError } = await supabase
             .from('users')
             .select('id')
             .eq('email', user_email)
@@ -34,6 +35,23 @@ export default async function createClientUserRecord(prevState, formData) {
 
             if (userError) {
                 return { success: false, error: userError.message }
+            }
+
+            // check to see if user has user_role in the correct account
+            const { data: userRole, error: rolesError } = await supabase
+            .from('user_roles')
+            .insert({
+                'user_id': userData.id,
+                'role_id': '833562f8-2b3f-4357-a0e3-31831f512fa6',
+                'account_id': account_id
+            })
+
+            if (rolesError) {
+                if (rolesError.code === '23505') {
+
+                } else {
+                return { success: false, error: rolesError.message}
+                }
             }
 
             const { data: assignmentData, error: assignmentError } = await supabase
@@ -48,7 +66,9 @@ export default async function createClientUserRecord(prevState, formData) {
             }
 
             return { success: true }
-        };
+            };
+        }
+             //
 
         if (userError) {
             return { success: false, error: userError.message }
