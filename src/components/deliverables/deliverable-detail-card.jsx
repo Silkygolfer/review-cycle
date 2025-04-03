@@ -11,7 +11,8 @@ import {
     Calendar, 
     Clock, 
     FileText,
-    EllipsisVertical
+    EllipsisVertical,
+    Edit
  } from "lucide-react";
 
  import { Separator } from "../ui/separator";
@@ -23,14 +24,28 @@ import deleteDeliverableRecord from "@/api/DELETE/delete-deliverable-record";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useUserPermissions } from "@/context/user-permissions-context";
-import DeliverableApprovalDialogForm from "./deliverable-approval-dialog-form";
 import RevisionHistory from "../revisions/revision-history";
 import { Dialog, DialogTrigger } from "../ui/dialog";
+import createReviewCycle from "@/api/POST/core/create-review-cycle";
+import ReviewCycleSelect from "../review-cycle/review-cycle-list";
 
 export default function DeliverableDetailCard({ deliverable, onEdit }) {
     const router = useRouter();
     const { isAdmin } = useUserPermissions();
 
+    // function to search and locate any in-progress review cycles
+    function inProgressReviewCycle() {
+        if(deliverable.review_cycles.find(review => review?.internal_review_cycle_status === 'in progress')) {
+            return true
+        } else {
+            return false
+        }
+    };
+
+    // variable to store results of in-progress review cycle checks
+    const reviewStatus = inProgressReviewCycle();
+
+    // function to get all the colors for the deliverable status
     const getStatusColor = (status) => {
         switch(status) {
           case 'approved':
@@ -48,6 +63,7 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
         }
     };
 
+    // function to format the date string correctly for Calendar component
     const formatDate = (dateString) => {
         if (!dateString) return '';
         
@@ -65,6 +81,7 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
         });
     };
 
+    // Function to handle the deletion of a deliverable -> Admins only
     const handleDelete = async (id) => {
         try {
             const response = await deleteDeliverableRecord(id);
@@ -82,6 +99,24 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
             toast.error('An unexpected error occurred');
         }
     }
+
+    // Function to start new review process by creating review_cycle record and redirecting to review page
+    const handleStartNewReview = async (deliverable_id) => {
+        try {
+            const result = await createReviewCycle(deliverable_id);
+            console.log('result: ', result)
+            if (result.success) {
+                toast.success('Redirecting to review page...')
+                router.push(`/campaigns/${result.reviewCycle.id}`)
+            }
+            if (result.error) {
+                toast.error('Error starting review: ' + result.error)
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+        }
+    }
+
 
     if (isAdmin) {
         return (
@@ -244,7 +279,17 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                         {deliverable.deliverable_status === 'needs approval' && (
                             <div className="flex flex-col space-y-2">
                                 <Separator className={'flex w-full -mt-2'} />
-                                <DeliverableApprovalDialogForm deliverable_id={deliverable.id} />
+                                {inProgressReviewCycle() ? (
+                                    <ReviewCycleSelect
+                                    review_cycles={deliverable.review_cycles}
+                                    url={deliverable.deliverable_content} />
+                                ) : <Button
+                                className={'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 my-2'}
+                                onClick={() => handleStartNewReview(deliverable.id)}>
+                                    <Edit />
+                                    Start Review
+                                </Button>}
+                                {/*<DeliverableApprovalDialogForm deliverable_id={deliverable.id} />*/}
                             </div>
                         )}
                 </CardContent>

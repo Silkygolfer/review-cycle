@@ -1,4 +1,6 @@
 'use server'
+// WILL SOON BE DEPRECATED IN FAVOR OF CREATE REVIEW CYCLE
+
 import { createClient } from "@/utils/supabase/server-supabase-instance";
 
 export default async function createRevisionRequest(prevState, formData) {

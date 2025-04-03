@@ -12,7 +12,7 @@ export default async function AuthenticatedLayout( {children }) {
         <UserPermissionsProvider permissions={permissionsData}>
             <SidebarProvider>
                 <AppSidebar />
-                    <main className="flex flex-col items-center w-full p-2 min-h-screen">
+                    <main className="flex flex-col items-center w-full min-h-[95vh]">
                         <SidebarTrigger className='mr-auto' />
                         <Breadcrumbs
                         homeLabel="Dashboard"
@@ -22,7 +22,8 @@ export default async function AuthenticatedLayout( {children }) {
                         'campaigns': 'Campaigns',
                         'clients': 'Clients',
                         'profile': 'My Profile',
-                        '[clientid]': 'Client Details'
+                        '[clientid]': 'Client Details',
+                        '[reviewid]': 'Deliverable Review'
                         }}
                         />
                         {children}

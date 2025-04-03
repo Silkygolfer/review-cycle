@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
+import { Separator } from '../ui/separator';
 
 export function Breadcrumbs({
   homeLabel = 'Dashboard',
@@ -24,7 +25,7 @@ export function Breadcrumbs({
     // Format: 'parentPath/': { pattern: RegExp, label: 'Friendly Name', queryParam: 'param-name' }
     'campaigns/': { 
       pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, 
-      label: 'Campaign Details',
+      label: 'Review Details',
       queryParam: 'campaign-name' // Query parameter that contains the name
     },
     // Add more dynamic route patterns as needed
@@ -126,6 +127,7 @@ export function Breadcrumbs({
   if (breadcrumbs.length <= 1) return null;
   
   return (
+    <>
     <nav aria-label="breadcrumb" className="w-full px-2 py-2">
       <ol className="flex flex-wrap items-center space-x-2 text-sm">
         {breadcrumbs.map((breadcrumb, index) => (
@@ -149,5 +151,7 @@ export function Breadcrumbs({
         ))}
       </ol>
     </nav>
+    <Separator className={'w-full mb-2'} />
+    </>
   );
 }
