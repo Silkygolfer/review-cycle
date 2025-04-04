@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client-supabase-instance';
 import { useRouter } from 'next/navigation';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export function PasswordSetupForm() {
   const [password, setPassword] = useState('');
@@ -44,38 +48,46 @@ export function PasswordSetupForm() {
   };
   
   return (
-    <form onSubmit={handleSubmit} className="signup-form">
-      {error && <div className="error-message">{error}</div>}
-      
-      <div className="form-group">
-        <label htmlFor="password">Create Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength="8"
-          className="form-control"
-        />
-      </div>
-      
-      <div className="form-group">
-        <label htmlFor="confirmPassword">Confirm Password</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          minLength="8"
-          className="form-control"
-        />
-      </div>
-      
-      <button type="submit" disabled={loading} className="submit-button">
-        {loading ? 'Processing...' : 'Complete Registration'}
-      </button>
-    </form>
+    <Card>
+      <CardHeader>
+        <CardTitle>Complete Signup</CardTitle>
+        <CardDescription>Enter your password below to complete your signup</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="signup-form">
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+          
+          <div className="flex flex-col gap-6">
+            <div className='grid gap-3'>
+              <Label htmlFor="password">Password</Label>
+              <Input 
+                id='password' 
+                name='password' 
+                type='password' 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+              />
+            </div>
+            <div className='grid gap-3'>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input 
+                id='confirmPassword' 
+                name='confirmPassword' 
+                type='password' 
+                value={confirmPassword} 
+                onChange={(e) => setConfirmPassword(e.target.value)} 
+                required 
+              />
+            </div>
+            <div className='flex flex-col gap-3'>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Setting up..." : "Complete Registration"}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
