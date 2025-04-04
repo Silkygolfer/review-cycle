@@ -4,13 +4,26 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useEffect, useRef, useState } from "react"
 import { v4 as uuidv4 } from 'uuid';
-import createRevisionComments from "@/api/POST/core/create-revision-comments";
+import createRevisionComment from "@/api/POST/core/create-revision-comments";
+import deleteRevisionComment from "@/api/DELETE/delete-revision-comment";
 import { Edit, Redo2, Trash, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { ScrollArea } from "../ui/scroll-area";
+import { toast } from "sonner";
+import SubmitRevisionDialog from "./submit-revision-dialog-confirmation";
+import SubmitApprovalDialog from "./submit-approval-dialog-confirmation";
 
-export default function ReviewImageMarker({ review_id, url, initialMarkers = [] }) {
+export default function ReviewImageMarker({ reviewData }) {
+    // review_id
+    const review_id = reviewData.id
+
+    // url
+    const url = reviewData.deliverables.deliverable_content
+
+    // initialMarkers
+    const initialMarkers = reviewData?.revision_comments || []
+
     // intialize router
     const router = useRouter();
 
@@ -20,9 +33,6 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
         height: 0,
         aspectRatio: 0
     });
-
-    // State for comment button loading
-    const [isLoading, setIsLoading] = useState(false)
 
     // State for image scale
     const [scale, setScale] = useState(1.0);
@@ -35,23 +45,18 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
 
     // State for markers and comments
     const [markers, setMarkers] = useState(initialMarkers);
+
+    // state for comment input component
     const [showCommentInput, setShowCommentInput] = useState(false);
+
+    // state for setting the active comment state
     const [activeComment, setActiveComment] = useState("");
 
-    // State for comment index
-    const [commentIndex, setCommentIndex] = useState(initialMarkers.length);
 
-    // Set boolean return function for index comparison
-    function needsSaved() {
-        if (commentIndex === markers.length) {
-            return false
-        } else {
-            return true
-        }
-    };
-
-    // State for conditional highlight component
+    // State for setting the selectedMarker for conditional rendering
     const [selectedMarker, setSelectedMarker] = useState(null);
+
+    // State for conditional rendering a comment highlight component
     const [showHighlight, setShowHighlight] = useState(false);
 
     // Refs
@@ -105,7 +110,7 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
     };
 
     // Function to add a marker with comment
-    const handleAddComment = () => {
+    const handleAddComment = async () => {
         if (activeComment.trim() !== "") {
             const newMarker = {
                 id: uuidv4(),
@@ -115,10 +120,20 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
                 review_cycle_id: review_id,
                 created_at: new Date().toISOString()
             };
-            
-            setMarkers([...markers, newMarker]);
-            setActiveComment("");
-            setShowCommentInput(false);
+            try {
+                const result = await createRevisionComment(newMarker);
+                if (result.success) {
+                    toast.success('Successfully added comment')
+                    setMarkers([...markers, newMarker]);
+                    setActiveComment("");
+                    setShowCommentInput(false);
+                }
+                if (result.error) {
+                    toast.error('Error adding comment: ' + result.error)
+                }
+            } catch (error) {
+                console.error('Error adding comment: ', error)
+            } 
         }
     };
 
@@ -128,33 +143,25 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
         setShowHighlight(true);
     }
 
-
-    // Function to call async commit comments to database
-    const handleSubmitComments = async (markers) => {
+    // Function to delete comments
+    const handleDeleteComment = async (id) => {
         try {
-            setIsLoading(true);
-            const result = await createRevisionComments(markers);
+            const result = await deleteRevisionComment(id)
+
             if (result.success) {
-                console.log('Successfully submitted comments')
-                setCommentIndex(markers.length);
+                toast.success('Deleted comment')
+                const stateMarker = markers.filter(item => item.id !== id)
+                setMarkers(stateMarker);
+                router.refresh();
+                setActiveComment('')
+                setShowHighlight(false)
             }
             if (result.error) {
-                console.log('Failed to submit comments')
+                toast.error('Failed to delete comment')
             }
-        } finally {
-            setIsLoading(false);
+        } catch (error) {
+            console.error('Error with handleDeleteComment function')
         }
-    };
-
-    // Function to delete comments
-    const handleDeleteComment = (id) => {
-        if (selectedMarker.id === id && showHighlight) {
-            setShowHighlight(false);
-            setSelectedMarker(null);
-        }
-        const stateMarker = markers.filter(item => item.id !== id)
-        setMarkers(stateMarker);
-        router.refresh();
     }; 
 
     // Function to trigger when mouse button is clicked and held for drag/pan
@@ -271,6 +278,151 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
         };
     }, []);
 
+    // get view_only UI
+    if (reviewData.review_status === 'revision requested' || reviewData.review_status === 'approved') {
+        return (
+            <div className="flex flex-row space-x-4 w-full">
+            <div className="flex flex-col space-y-2">
+                <div className="flex relative">
+                    <div
+                        ref={containerRef} 
+                        className="w-full relative overflow-auto" 
+                        style={{
+                            height: '600px',
+                            width: '600px',
+                            border: '1px solid #ccc',
+                        }}
+                    >
+                        <div 
+                            style={{ 
+                                width: scaledWidth, 
+                                height: scaledHeight, 
+                                position: 'relative' 
+                            }}
+                        >
+                            <img
+                                ref={imageRef}
+                                src={url}
+                                alt="Image"
+                                style={{ 
+                                    width: imageDimensions.width,
+                                    height: imageDimensions.height,
+                                    maxWidth: 'none', 
+                                    maxHeight: 'none', 
+                                    transform: `scale(${scale})`, 
+                                    transformOrigin: '0 0',
+                                    userSelect: 'none',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0
+                                }}
+                                draggable="false"
+                            />
+                            
+                            {/* Render markers directly on the image's parent div */}
+                            {markers.map((marker, index) => (
+                                <div
+                                    key={marker.id}
+                                    className="absolute rounded-full bg-red-500 border-2 border-white flex items-center justify-center"
+                                    onClick={() => handleMarkerClick(marker)}
+                                    style={{
+                                        width: '24px',
+                                        height: '24px',
+                                        left: `${marker.position.x * scale - 12}px`,
+                                        top: `${marker.position.y * scale - 12}px`,
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        zIndex: 10
+                                    }}
+                                    title={marker.comment}
+                                >
+                                    {index + 1}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Zoom control */}
+                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[60%] hover:bg-gray-200 hover:rounded-2xl opacity-10 hover:opacity-100 hover:z-50">
+                        <div className="flex flex-col items-center justify-center pb-2">
+                            <div className="flex items-center justify-center w-full">
+                                <p className="text-black flex p-2 justify-center">Slide to zoom in and out</p>
+                                <Button variant={'ghost'} className={'hover:bg-muted/10 hover:cursor-pointer'} onClick={() => setLocalScale()}>
+                                    <Redo2 className="w-4 h-4 text-black hover:cursor-pointer" />
+                                </Button>
+                            </div>
+                            <Slider
+                                defaultValue={[1.0]}
+                                value={[scale]}
+                                min={0.1}
+                                max={4}
+                                step={0.01}
+                                onValueChange={(newValue) => setScale(newValue[0])}
+                                className={'w-full p-2'}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col max-w-[400px] w-full h-full max-h-full">
+                {/* Conditionally render the comment highlight component */}
+                {showHighlight && (
+                    <div className="flex flex-col w-full border rounded-md relative border-blue-500 mt-4">
+                        <div className="flex flex-row">
+                            <div className="flex items-center text-sm italic p-2">
+                                Marker Position: X:{selectedMarker.position.x}, Y:{selectedMarker.position.y}
+                            </div>
+                            <div className="flex p-2 ml-auto">
+                                <Button variant={'ghost'} className={'w-8 h-8'} onClick={() => {
+                                    setActiveComment('');
+                                    setShowHighlight(false);
+                                }}>
+                                    <X />
+                                </Button>
+                            </div>
+                        </div>
+                        <Separator orientation="horizontal" className={'flex w-full'}/>
+                        <ScrollArea className={'w-fit max-h-[150px]'}>
+                        <div className="flex p-2 items-center text-lg">
+                            <p className="text-md">
+                                {selectedMarker.comment}
+                            </p>
+                        </div>
+                        </ScrollArea>
+                    </div>
+                )}
+                
+                {/* Comments list */}
+                {markers.length > 0 && (
+                    <div className="mt-2 w-full">
+                        <h3 className="text-lg font-medium mb-2">Comments</h3>
+                        <div className="flex max-h-[295px] border rounded-md divide-y">
+                        <ScrollArea className={'overflow-hidden w-full pt-2'}>
+                            {markers.map((marker, index) => (
+                                <div 
+                                key={marker.id} 
+                                className="p-3 flex items-center border-b space-x-2 hover:cursor-pointer"
+                                onClick={() => {
+                                    setSelectedMarker(marker);
+                                    setShowHighlight(true);
+                                }}>
+                                    <div className="mr-3 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0">
+                                        {index + 1}
+                                    </div>
+                                        <p className="line-clamp-3">{marker.comment}</p>
+                                </div>
+                            ))}
+                        </ScrollArea>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+        )
+    }
+
+    // get editable UI
     return (
         <div className="flex flex-row space-x-4 w-full">
             <div className="flex flex-col space-y-2">
@@ -362,12 +514,8 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
                     <h1 className="flex items-center ml-2 p-2">Approve or Submit Revision</h1>
                     <div
                     className="flex ml-auto p-2 flex-wrap">
-                        <Button
-                        variant={'outline'}
-                        className={'hover:border-green-600 m-2 w-fit'}>Approve</Button>
-                        <Button
-                        variant={'outline'}
-                        className={'hover:border-red-600 m-2 w-fit'}>Submit Revision</Button>
+                        <SubmitApprovalDialog review_id={review_id}/>
+                        <SubmitRevisionDialog review_id={review_id} />
                     </div>
                 </div>
             </div>
@@ -382,9 +530,8 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
                 {/* Comment input form */}
                 {showCommentInput && (
                     <div className="flex flex-col w-full border rounded-md">
-                        <h3 className="flex items-center text-md font-medium p-2 m-2">Add Comment</h3>
                         <textarea 
-                            className="flex p-2 border rounded-md mx-2 mb-2"
+                            className="flex p-2 border rounded-md m-2"
                             rows="3"
                             placeholder="Enter your comment here..."
                             value={activeComment}
@@ -435,11 +582,13 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
                             </div>
                         </div>
                         <Separator orientation="horizontal" className={'flex w-full'}/>
+                        <ScrollArea className={'w-fit max-h-[150px]'}>
                         <div className="flex p-2 items-center text-lg">
                             <p className="text-md">
                                 {selectedMarker.comment}
                             </p>
                         </div>
+                        </ScrollArea>
                     </div>
                 )}
                 
@@ -447,8 +596,8 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
                 {markers.length > 0 && (
                     <div className="mt-2 w-full">
                         <h3 className="text-lg font-medium mb-2">Comments</h3>
-                        <div className="flex max-h-[300px] border rounded-md divide-y">
-                        <ScrollArea className={'overflow-hidden pt-2'}>
+                        <div className="flex max-h-[295px] border rounded-md divide-y">
+                        <ScrollArea className={'overflow-hidden w-full pt-2'}>
                             {markers.map((marker, index) => (
                                 <div 
                                 key={marker.id} 
@@ -465,24 +614,9 @@ export default function ReviewImageMarker({ review_id, url, initialMarkers = [] 
                             ))}
                         </ScrollArea>
                         </div>
-                        <div className="flex w-full mt-3">
-                            {needsSaved() && (
-                            <>
-                            <Button
-                            variant={'outline'}
-                            className={'hover:cursor-pointer hover:border-green-600'}
-                            disabled={isLoading}
-                            onClick={() => handleSubmitComments(markers)}
-                            >
-                                {isLoading ? 'Saving comments...' : 'Save Comments'}
-                            </Button>
-                            <p className="flex text-red-500 items-center text-sm italic text-wrap px-2">You have unsaved changes</p>
-                            </>
-                            )}
-                        </div>
                     </div>
                 )}
             </div>
         </div>
     );
-}
+};

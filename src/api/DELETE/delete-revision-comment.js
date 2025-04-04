@@ -1,7 +1,7 @@
 'use server'
 import { createClient } from "@/utils/supabase/server-supabase-instance";
 
-export default async function deleteComment(id) {
+export default async function deleteRevisionComment(id) {
     const supabase = await createClient();
 
     try {

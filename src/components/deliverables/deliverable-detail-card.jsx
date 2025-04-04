@@ -12,7 +12,8 @@ import {
     Clock, 
     FileText,
     EllipsisVertical,
-    Edit
+    Edit,
+    ArrowRightIcon
  } from "lucide-react";
 
  import { Separator } from "../ui/separator";
@@ -24,10 +25,9 @@ import deleteDeliverableRecord from "@/api/DELETE/delete-deliverable-record";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useUserPermissions } from "@/context/user-permissions-context";
-import RevisionHistory from "../revisions/revision-history";
+import ReviewHistory from "../revisions/revision-history";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import createReviewCycle from "@/api/POST/core/create-review-cycle";
-import ReviewCycleSelect from "../review-cycle/review-cycle-list";
 
 export default function DeliverableDetailCard({ deliverable, onEdit }) {
     const router = useRouter();
@@ -35,14 +35,11 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
 
     // function to search and locate any in-progress review cycles
     function inProgressReviewCycle() {
-        if(deliverable.review_cycles.find(review => review?.internal_review_cycle_status === 'in progress')) {
-            return true
-        } else {
-            return false
-        }
+        const inProgressReview = deliverable.review_cycles.find(review => review?.review_status === 'in progress');
+
+        return inProgressReview || false;
     };
 
-    // variable to store results of in-progress review cycle checks
     const reviewStatus = inProgressReviewCycle();
 
     // function to get all the colors for the deliverable status
@@ -104,10 +101,9 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
     const handleStartNewReview = async (deliverable_id) => {
         try {
             const result = await createReviewCycle(deliverable_id);
-            console.log('result: ', result)
             if (result.success) {
                 toast.success('Redirecting to review page...')
-                router.push(`/campaigns/${result.reviewCycle.id}`)
+                router.push(`/campaigns/${result.reviewCycle.id}?url=${deliverable.deliverable_content}`)
             }
             if (result.error) {
                 toast.error('Error starting review: ' + result.error)
@@ -116,6 +112,11 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
             console.error('Error: ', error);
         }
     }
+
+    // Function to handle pushing to a in-progress review cycle
+    const handleContinueReview = (id) => {
+        router.push(`/campaigns/${id}?url=${deliverable.deliverable_content}`)
+    };
 
 
     if (isAdmin) {
@@ -142,10 +143,10 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                                View Revision History
+                                                View Review History
                                             </DropdownMenuItem>
                                         </DialogTrigger>
-                                        <RevisionHistory revisions={deliverable.review_cycles} />
+                                        <ReviewHistory reviews={deliverable.review_cycles} />
                                     </Dialog>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem variant="destructive" onClick={() => handleDelete(deliverable.id)}>
@@ -227,7 +228,7 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                                                 View Revision History
                                             </DropdownMenuItem>
                                         </DialogTrigger>
-                                        <RevisionHistory revisions={deliverable.review_cycles} />
+                                        <ReviewHistory reviews={deliverable.review_cycles} />
                                     </Dialog>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -279,12 +280,14 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                         {deliverable.deliverable_status === 'needs approval' && (
                             <div className="flex flex-col space-y-2">
                                 <Separator className={'flex w-full -mt-2'} />
-                                {inProgressReviewCycle() ? (
-                                    <ReviewCycleSelect
-                                    review_cycles={deliverable.review_cycles}
-                                    url={deliverable.deliverable_content} />
+                                {reviewStatus ? (
+                                    <Button
+                                    className={'w-full bg-blue-600 hover:bg-blue-700 text-white my-2 hover:cursor-pointer'}
+                                    onClick={() => handleContinueReview(reviewStatus.id)}>
+                                        <ArrowRightIcon /> Continue Review?
+                                    </Button>
                                 ) : <Button
-                                className={'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 my-2'}
+                                className={'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 my-2 hover:cursor-pointer'}
                                 onClick={() => handleStartNewReview(deliverable.id)}>
                                     <Edit />
                                     Start Review

@@ -1,10 +1,15 @@
+'use client'
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardTitle } from "../ui/card";
 import { DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
-import { Label } from "../ui/label";
 import React from "react";
 
-export default function RevisionHistory({ revisions }) {
+export default function ReviewHistory({ reviews }) {
+    // intit router
+    const router = useRouter();
+
+    // date format helper
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { 
@@ -16,6 +21,11 @@ export default function RevisionHistory({ revisions }) {
         });
     };
 
+    // handle Review selection push
+    const handleReviewPush = (id) => {
+        router.push(`/campaigns/${id}`)
+    }
+
     return (
             <DialogContent>
                 <DialogHeader>
@@ -23,27 +33,28 @@ export default function RevisionHistory({ revisions }) {
                 </DialogHeader>
                 <ScrollArea className="max-h-[60vh]">
                 <div className="p-4 space-y-2">
-                    {revisions && revisions.length > 0 ? (
-                        revisions.map(revision => (
-                            <React.Fragment key={revision.id}>
-                            {revision.review_status === 'approved' ? (
-                            <Card className="shadow-sm border-1 border-green-700">
+                    {reviews && reviews.length > 0 ? (
+                        reviews.map(review => (
+                            <React.Fragment key={review.id}>
+                            {review.review_status === 'approved' ? (
+                            <Card className="shadow-sm border-1 border-green-600">
                                 <CardTitle className="text-sm p-4">
-                                    {formatDate(revision.submitted_at)} - {revision.users?.first_name} {revision.users?.last_name}
+                                    {formatDate(review.submitted_at)} - {review.users?.first_name} {review.users?.last_name}
                                 </CardTitle>
                                 <CardContent className="pt-2">
                                     Approved
                                 </CardContent>
                             </Card>
                             ) : (
-                                <Card key={revision.id} className="shadow-sm">
+                                <Card 
+                                key={review.id} 
+                                className="shadow-sm border-1 border-red-600 hover:cursor-pointer"
+                                onClick={() => handleReviewPush(review.id)}>
                                 <CardTitle className="text-sm p-4">
-                                    {formatDate(revision.submitted_at)} - {revision.users?.first_name} {revision.users?.last_name}
+                                    {formatDate(review.submitted_at)} - {review.users?.first_name} {review.users?.last_name}
                                 </CardTitle>
                                 <CardContent className="pt-2">
-                                    <Label className="italic block indent-1">
-                                        "{revision.revision_comment}"
-                                    </Label>
+                                    Revision Requested
                                 </CardContent>
                             </Card>
                             )}
@@ -51,7 +62,7 @@ export default function RevisionHistory({ revisions }) {
                         ))
                     ) : (
                         <div className="text-center text-gray-500">
-                            No revision history available
+                            No review history available
                         </div>
                     )}
                 </div>

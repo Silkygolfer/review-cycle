@@ -1,13 +1,13 @@
 'use server'
 import { createClient } from "@/utils/supabase/server-supabase-instance";
 
-export default async function createRevisionComments(markers) {
+export default async function createRevisionComment(marker) {
     const supabase = await createClient();
     
     try {
         const { data: commentData, error: commentError } = await supabase
         .from('revision_comments')
-        .upsert(markers)
+        .insert(marker)
 
         if (commentError) {
             return { success: false, error: commentError.message }

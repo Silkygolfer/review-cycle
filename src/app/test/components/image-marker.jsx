@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import createRevisionComments from "@/api/POST/core/create-revision-comments";
 import { Edit, Trash, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import deleteComment from "@/api/DELETE/delete-comment";
+import deleteComment from "@/api/DELETE/delete-revision-comment";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 

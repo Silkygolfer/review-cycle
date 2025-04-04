@@ -1,3 +1,4 @@
+'use server'
 import { createClient } from "@/utils/supabase/server-supabase-instance";
 
 export default async function getDeliverables(campaignid) {

@@ -1,5 +1,5 @@
 import ImageMarker from './components/image-marker';
-import getRevisionComments from '@/api/GET/core/comments/get-revision-comments';
+import getRevisionComments from '@/api/GET/core/reviews/get-review-data';
 
 export default async function TestPage() {
   const review_id = '77f34695-c920-4a2b-b54f-ea9eea4c8a79'
