@@ -2,8 +2,8 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata = {
-  title: "Review-Cycle",
-  description: "Get approvals, fast.",
+  title: "CmndCenter",
+  description: "You're in control.",
 };
 
 export default function RootLayout({ children }) {

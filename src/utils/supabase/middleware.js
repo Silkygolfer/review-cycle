@@ -34,15 +34,15 @@ export async function updateSession(request) {
   
   // Define public paths that are accessible without authentication
   const isPublicPath = 
-    request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/auth') ||
-    request.nextUrl.pathname.startsWith('/sign-up') ||
-    request.nextUrl.pathname.startsWith('/home')
+    request.nextUrl.pathname === '/' // ||
+    //request.nextUrl.pathname.startsWith('/login') ||
+    //request.nextUrl.pathname.startsWith('/auth') ||
+    //request.nextUrl.pathname.startsWith('/sign-up')
 
   // Redirect unauthenticated users to login if they try to access protected routes
   if (!user && !isPublicPath) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/'
     return NextResponse.redirect(url)
   }
 
