@@ -1,5 +1,5 @@
 import getReviewData from "@/api/GET/core/reviews/get-review-data";
-import ReviewImageMarker from "@/components/review-cycle/review-image-marker";
+import ReviewImageMarker from "@/components/reviews/review-image-marker";
 
 export default async function ReviewWizardPage({ params, searchParams }) {
     // get review_id from params

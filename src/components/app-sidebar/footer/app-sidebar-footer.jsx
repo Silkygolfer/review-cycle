@@ -42,6 +42,9 @@ export default async function AppSidebarFooter({ userData, role }) {
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuSeparator />
+                                <DropdownMenuItem disabled='true'>
+                                    <span>Notifications</span>
+                                </DropdownMenuItem>
                                 <Link href='/profile'>
                                     <DropdownMenuItem>
                                         <span>Profile</span>
@@ -83,6 +86,9 @@ export default async function AppSidebarFooter({ userData, role }) {
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuSeparator />
+                                <DropdownMenuItem disabled='true'>
+                                    <span>Notifications</span>
+                                </DropdownMenuItem>
                                 <Link href='/profile'>
                                     <DropdownMenuItem>
                                         <span>Profile</span>
@@ -117,6 +123,9 @@ export default async function AppSidebarFooter({ userData, role }) {
                             side='top'
                             style={{ width: 'var(--radix-popper-anchor-width)' }}
                             >
+                                <DropdownMenuItem disabled='true'>
+                                    <span>Notifications</span>
+                                </DropdownMenuItem>
                                 <Link href='/profile'>
                                     <DropdownMenuItem>
                                         <span>Profile</span>

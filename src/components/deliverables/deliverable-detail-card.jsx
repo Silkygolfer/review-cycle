@@ -28,9 +28,18 @@ import { useUserPermissions } from "@/context/user-permissions-context";
 import ReviewHistory from "../revisions/revision-history";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import createReviewCycle from "@/api/POST/core/create-review-cycle";
+import EditDeliverableForm from "./edit-deliverable-form";
+import { useState } from "react";
 
-export default function DeliverableDetailCard({ deliverable, onEdit }) {
+export default function DeliverableDetailCard({ deliverable }) {
+    // init Router
     const router = useRouter();
+
+    const refreshData = () => {
+        router.refresh()
+    }
+
+    // get permissions
     const { isAdmin } = useUserPermissions();
 
     // function to search and locate any in-progress review cycles
@@ -118,9 +127,24 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
         router.push(`/campaigns/${id}?url=${deliverable.deliverable_content}`)
     };
 
+    // set State for edit form
+    const [isOpen, setIsOpen] = useState(false);
+
+    // function to open editable deliverable form
+    const openDialog = () => {
+        setIsOpen(true)
+    };
+
 
     if (isAdmin) {
         return (
+            <>
+            {isOpen && <EditDeliverableForm
+            data={deliverable}
+            refreshData={refreshData}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen} />}
+
             <div className="space-y-2 flex">
                 <Card className="flex space-y-2 w-full mx-2 p-2">
                     <CardTitle className={'flex px-2 mt-2'}>
@@ -137,13 +161,13 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                     <Separator />
-                                    <DropdownMenuItem onClick={() => onEdit(deliverable)}>
+                                    <DropdownMenuItem onClick={() => openDialog()}>
                                         Edit Deliverable
                                     </DropdownMenuItem>
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                                View Review History
+                                                Review History
                                             </DropdownMenuItem>
                                         </DialogTrigger>
                                         <ReviewHistory reviews={deliverable.review_cycles} />
@@ -167,26 +191,22 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                                 {deliverable.deliverable_status}
                             </span>
                         </div>
-                        <div className="flex flex-row">
-                            <Info className="h-4 w-4 mr-2 mt-1 flex-shrink-0"/>
-                            <span>{deliverable.deliverable_description}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div className="flex items-center">
-                                <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                                <div>
-                                <p className="text-xs text-gray-500">Start Date</p>
-                                <p className="text-sm">{formatDate(deliverable.deliverable_start_date)}</p>
-                                </div>
+                        {deliverable?.deliverable_description && (
+                            <div className="flex flex-row">
+                                <Info className="h-4 w-4 mr-2 mt-1 flex-shrink-0"/>
+                                <span>{deliverable.deliverable_description}</span>
                             </div>
-                            <div className="flex items-center">
-                                <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                                <div>
-                                <p className="text-xs text-gray-500">End Date</p>
-                                <p className="text-sm">{formatDate(deliverable.deliverable_end_date)}</p>
-                                </div>
+                        )}
+                        {deliverable?.deliverable_due_date && (
+                        <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                            <div>
+                            <p className="text-xs text-gray-500">Due Date</p>
+                            <p className="text-sm">{formatDate(deliverable.deliverable_due_date)}</p>
                             </div>
                         </div>
+                        )}
+
                         <Separator className={'flex w-full'}/>
                         <div className="flex">
                             <a 
@@ -202,6 +222,7 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                     </CardContent>
                 </Card>
             </div>
+            </>
         )
     }
 
@@ -225,7 +246,7 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                                View Revision History
+                                                Revision History
                                             </DropdownMenuItem>
                                         </DialogTrigger>
                                         <ReviewHistory reviews={deliverable.review_cycles} />
@@ -245,26 +266,22 @@ export default function DeliverableDetailCard({ deliverable, onEdit }) {
                             {deliverable.deliverable_status}
                         </span>
                     </div>
-                    <div className="flex flex-row">
-                        <Info className="h-4 w-4 mr-2 mt-1 flex-shrink-0"/>
-                        <span>{deliverable.deliverable_description}</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    {deliverable?.deliverable_description && (
+                        <div className="flex flex-row">
+                            <Info className="h-4 w-4 mr-2 mt-1 flex-shrink-0"/>
+                            <span>{deliverable.deliverable_description}</span>
+                        </div>
+                    )}
+                    {deliverable?.deliverable_due_date && (
                         <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-2 text-gray-500" />
                             <div>
-                            <p className="text-xs text-gray-500">Start Date</p>
-                            <p className="text-sm">{formatDate(deliverable.deliverable_start_date)}</p>
+                            <p className="text-xs text-gray-500">Due Date</p>
+                            <p className="text-sm">{formatDate(deliverable.deliverable_due_date)}</p>
                             </div>
                         </div>
-                        <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                            <div>
-                            <p className="text-xs text-gray-500">End Date</p>
-                            <p className="text-sm">{formatDate(deliverable.deliverable_end_date)}</p>
-                            </div>
-                        </div>
-                    </div>
+                    )}
+
                     <Separator className={'flex w-full'}/>
                     <div className="flex">
                         <a 

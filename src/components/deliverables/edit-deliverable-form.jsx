@@ -4,14 +4,14 @@ import { Controller, useForm } from "react-hook-form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import FileUploader from "./file-uploader";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
-import createDeliverable from "@/api/POST/core/create-deliverable";
+import FileUploader from "./file-uploader";
+import updateDeliverable from "@/api/PATCH/core/update-deliverable";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -28,50 +28,42 @@ const deliverableSchema = z.object({
         invalid_type_error: "Invalid date"
     }),
     deliverable_content: z.string()
-    .min(1, "File is required")
+    .min(1, "File is required"),
+    campaign_id: z.string(),
+    id: z.string()
 })
 
 
-export default function CreateDeliverableForm({ campaign_id, refreshData }) {
-
-    // set state for dialog
-    const [isOpen, setIsOpen] = useState(false)
-
-    // function for opening dialog
-    const openDialog = () => {
-        setIsOpen(true)
-    };
+export default function EditDeliverableForm({ data, refreshData, isOpen, setIsOpen }) {
 
     // get form APIs
     const { register, control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(deliverableSchema),
         defaultValues: {
-            deliverable_name: '',
-            deliverable_description: '',
-            deliverable_type: '',
-            deliverable_due_date: '',
-            deliverable_status: '',
-            deliverable_content: '',
-            campaign_id: campaign_id
+            id: data?.id,
+            deliverable_name: data?.deliverable_name || '',
+            deliverable_description: data?.deliverable_description || '',
+            deliverable_type: data?.deliverable_type || '',
+            deliverable_due_date: data?.deliverable_due_date ? new Date(data.deliverable_due_date) : new Date(),
+            deliverable_status: data?.deliverable_status || '',
+            deliverable_content: data?.deliverable_content || '',
+            campaign_id: data.campaign_id
         }
     })
 
     // handle submitting the form
     const onSubmit = async (data) => {
-        // handle adding the campaign_id
-        data.campaign_id = campaign_id
-
         try {
-            const result = await createDeliverable(data)
+            const result = await updateDeliverable(data)
             if (result.success) {
-                toast.success('Deliverable created successfully!')
+                toast.success('Deliverable updated successfully!')
                 reset();
-                setIsOpen(false)
                 refreshData();
+                setIsOpen(false);
             }
 
             if (result.error) {
-                toast.error('Failed to create deliverable - ' + result.error)
+                toast.error('Failed to update deliverable - ' + result.error)
             }
         } catch (error) {
             toast.error('Error: ' + error.message)
@@ -79,19 +71,11 @@ export default function CreateDeliverableForm({ campaign_id, refreshData }) {
     };
 
     return (
-        <>
-        <Button
-        onClick={() => openDialog()}
-        variant={'outline'}
-        className={'mb-2'}
-        >
-            Create Deliverable
-        </Button>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className={'sm:max-w-[425px]'}>
                 <DialogHeader>
-                    <DialogTitle>Create Deliverable</DialogTitle>
-                    <DialogDescription>Use this form to create a Deliverable!</DialogDescription>
+                    <DialogTitle>Update Deliverable</DialogTitle>
+                    <DialogDescription>Use this form to update your Deliverable</DialogDescription>
                 </DialogHeader>
                 <div className="flex p-2 w-full items-center">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
@@ -168,7 +152,7 @@ export default function CreateDeliverableForm({ campaign_id, refreshData }) {
                             render={({ field }) => (
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button variant={'outline'}>{field?.value ? field.value.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric'}) : "Select Date"} </Button>
+                                        <Button variant={'outline'}>{field?.value ? field.value.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Select Date"} </Button>
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         <Calendar
@@ -190,19 +174,21 @@ export default function CreateDeliverableForm({ campaign_id, refreshData }) {
                         <Controller
                         name="deliverable_content"
                         control={control}
-                        defaultValue={''}
+                        defaultValue={data?.deliverable_content || ''}
                         render={({ field }) => (
                             <FileUploader
                             value={field.value}
                             onChange={field.onChange}
                             disabled={isSubmitting}
+                            allowedFileTypes={'image/png, image/jpeg, image/jpg'}
+                            acceptAttribute=".png, .jpeg, .jpg"
                             />
                         )}
                         />
                         {errors.deliverable_content && (
                             <p className="text-red-500 text-sm mt-1">{errors.deliverable_content.message}</p>
                         )}
-
+                        
                         <Separator
                         className={'w-[90%] my-4'} 
                         />
@@ -210,12 +196,11 @@ export default function CreateDeliverableForm({ campaign_id, refreshData }) {
                         <Button
                         disabled={isSubmitting}
                         >
-                            {isSubmitting ? 'Creating Deliverable..' : 'Create Deliverable'}
+                            {isSubmitting ? 'Updating Deliverable..' : 'Update Deliverable'}
                         </Button>
                     </form>
                 </div>
             </DialogContent>
         </Dialog>
-        </>
     )
 }

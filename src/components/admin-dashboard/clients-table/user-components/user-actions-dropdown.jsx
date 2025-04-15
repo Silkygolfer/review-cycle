@@ -20,8 +20,8 @@ export function UserDropdownMenu({ user, client }) {
   const router = useRouter();
 
   // handles user delete and client feedback messaging 
-  const handleDeleteUser = async ({ user_id, client_id }) => {
-    const result = await removeUserFromClient({ user_id: user_id, client_id: client_id });
+  const handleDeleteUser = async ({ user_id, client }) => {
+    const result = await removeUserFromClient({ user_id: user_id, client: client });
     if (result.success) {
       toast.message('User deleted successfully!')
       router.refresh();
@@ -57,7 +57,7 @@ export function UserDropdownMenu({ user, client }) {
               <DropdownMenuItem disabled>
                 Edit User
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDeleteUser({ user_id: user.id, client_id: client.id })} variant="destructive">
+              <DropdownMenuItem onClick={() => handleDeleteUser({ user_id: user.id, client: client })} variant="destructive">
                 Delete User
               </DropdownMenuItem>
             </DropdownMenuGroup>

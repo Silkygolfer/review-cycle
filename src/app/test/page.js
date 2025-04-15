@@ -1,11 +1,10 @@
-import { PasswordSetupForm } from "@/components/auth/invite-signup/password-setup-form";
+import CampaignForm from "@/components/campaigns/create-campaign-form";
 
-export default async function CompleteSignupPage() {
+export default function TestPage() {
     return (
-      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <PasswordSetupForm />
-      </div>
-    </div>
-    );
-  }
+        <div className="flex h-full w-full items-center justify-center">
+            <CampaignForm
+            client_id={'3de49b92-5147-4b10-969c-95fd4e1364e0'} />
+        </div>
+    )
+}

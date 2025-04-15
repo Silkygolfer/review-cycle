@@ -28,10 +28,10 @@ export default async function createClientUserRecord(prevState, formData) {
         if (userError) {
             if (userError.code === 'email_exists') {
                 const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('id')
-            .eq('email', user_email)
-            .single()
+                .from('users')
+                .select('id')
+                .eq('email', user_email)
+                .single()
 
             if (userError) {
                 return { success: false, error: userError.message }
@@ -58,7 +58,8 @@ export default async function createClientUserRecord(prevState, formData) {
             .from('client_assignments')
             .insert({
                 'user_id': userData.id,
-                'client_id': client_id
+                'client_id': client_id,
+                'account_id': account_id
             })
 
             if (assignmentError) {
@@ -104,7 +105,8 @@ export default async function createClientUserRecord(prevState, formData) {
         .from('client_assignments')
         .insert({
             'user_id': userData.user.id,
-            'client_id': client_id
+            'client_id': client_id,
+            'account_id': account_id
         })
 
         if (assignmentError) {

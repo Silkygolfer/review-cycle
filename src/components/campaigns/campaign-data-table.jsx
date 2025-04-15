@@ -39,17 +39,16 @@ import {
     TableHeader,
     TableRow
 } from "../ui/table";
-import CreateCampaignDialogForm from "./create-campaign-form";
 import React from "react";
 import DeliverablesDetailView from "../deliverables/deliverables-expanded-row";
 import { useUserPermissions } from "@/context/user-permissions-context";
+import CreateCampaignForm from "./create-campaign-form";
 
 
 export function CampaignDataTable({ columns, data }) {
     const [columnFilters, setColumnFilters] = useState([]);
     const [expanded, setExpanded] = useState({});
     const [open, setOpen] = useState(false);
-    const [openCampaignCreateForm, setOpenCampaignCreateForm] = useState(false);
     const [selectedClientId, setSelectedClientId] = useState(null);
     const router = useRouter();
     
@@ -134,14 +133,6 @@ export function CampaignDataTable({ columns, data }) {
     if (isAdmin) {
         return (
             <>
-            {openCampaignCreateForm && (
-                <CreateCampaignDialogForm 
-                    openCampaignCreateForm={openCampaignCreateForm} 
-                    setOpenCampaignCreateForm={setOpenCampaignCreateForm} 
-                    refreshData={refreshData}
-                    clientOptions={clientOptions} // Pass the entire data array as clients
-                />
-            )}
             <div className="flex w-full flex-col">
                 <div className="flex w-full items-center py-4 gap-4">
                     <Input
@@ -206,13 +197,10 @@ export function CampaignDataTable({ columns, data }) {
                         </Button>
                     )}
                     <div className="flex ml-auto px-2">
-                        <Button
-                            type='button'
-                            variant={'outline'}
-                            className={'border-1 hover:border-green-700'}
-                            onClick={() => setOpenCampaignCreateForm(true)}>
-                            Create New Campaign
-                        </Button>
+                        <CreateCampaignForm
+                        clientOptions={clientOptions}
+                        refreshData={refreshData}
+                        />
                     </div>
                 </div>
                 <div className="rounded-md border">

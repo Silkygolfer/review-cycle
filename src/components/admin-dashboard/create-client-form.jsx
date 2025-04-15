@@ -45,7 +45,7 @@ export default function CreateClientDialogForm({ accountId }) {
     return (
         <Dialog open={isOpen} onOpenChange={setisOpen}>
             <DialogTrigger asChild>
-                <Button className={'my-2 border-1 hover:border-green-700'} variant={'outline'}>Create Client</Button>
+                <Button className={'mr-auto'} variant={'outline'}>Create Client</Button>
             </DialogTrigger>
             <DialogContent>
             <DialogTitle className={'flex justify-center'}>

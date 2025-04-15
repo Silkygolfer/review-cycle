@@ -11,6 +11,7 @@ export async function uploadFileToSupabase(formData) {
     const supabase = await createClient();
 
   try {
+    
     const file = formData.get('file');
     
     if (!file || !(file instanceof File)) {

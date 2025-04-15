@@ -15,9 +15,6 @@ export default function ClientAssignments({ client }) {
   function refreshData() {
       router.refresh();
   };
-
-  console.log('client', client)
-
   
   return (
     <div className="p-4">

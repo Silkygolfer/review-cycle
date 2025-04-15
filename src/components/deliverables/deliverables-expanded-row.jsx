@@ -1,31 +1,17 @@
 'use client'
 import { Separator } from "../ui/separator";
-import { useState } from "react";
-import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import DeliverableDetailCard from "./deliverable-detail-card";
-import DeliverableForm from "./create-deliverable-form";
+import CreateDeliverableForm from "./create-deliverable-form";
 import { useUserPermissions } from "@/context/user-permissions-context";
 
 export default function DeliverablesDetailView({ data, campaignId }) {
-    const [openDeliverableCreateForm, setOpenDeliverableCreateForm] = useState(false);
-    const [selectedDeliverable, setSelectedDeliverable] = useState(null);
     const router = useRouter();
     const { isAdmin } = useUserPermissions();
     
     const refreshData = () => {
         router.refresh();
     }; 
-
-    const handleOpenForm = (deliverable = null) => {
-        setSelectedDeliverable(deliverable);
-        setOpenDeliverableCreateForm(true);
-    };
-
-    const handleCloseForm = () => {
-        setOpenDeliverableCreateForm(false);
-        setSelectedDeliverable(null);
-    };
 
     const organizedDeliverables = (deliverables) => {
         return deliverables.reduce((result, deliverable) => {
@@ -45,19 +31,12 @@ export default function DeliverablesDetailView({ data, campaignId }) {
 
     if (isAdmin) {
         return (
-            <>
-            {openDeliverableCreateForm && (
-                <DeliverableForm 
-                    initialData={selectedDeliverable} 
-                    isOpen={openDeliverableCreateForm} 
-                    setIsOpen={handleCloseForm}
-                    campaignId={campaignId}
-                    refreshData={refreshData} 
-                />
-            )}
             <div className="flex-col w-full h-full p-4">
                 <div className="flex deliverable-header w-full">
-                    <Button className='flex mb-4 border-1 hover:border-green-700' variant={'outline'} onClick={() => handleOpenForm()}>Add Deliverable</Button>
+                    <CreateDeliverableForm
+                    campaign_id={campaignId}
+                    refreshData={refreshData}
+                    />
                 </div>
                 <Separator />
                 <div className="deliverable-content h-full flex flex-row space-y-2">
@@ -70,8 +49,7 @@ export default function DeliverablesDetailView({ data, campaignId }) {
                             {organizedDeliverables(data)['email']?.map(deliverable => (
                                 <DeliverableDetailCard 
                                     deliverable={deliverable} 
-                                    key={deliverable.id} 
-                                    onEdit={handleOpenForm} 
+                                    key={deliverable.id}  
                                 />
                             ))}
                         </div>  
@@ -87,7 +65,6 @@ export default function DeliverablesDetailView({ data, campaignId }) {
                                 <DeliverableDetailCard 
                                     deliverable={deliverable} 
                                     key={deliverable.id} 
-                                    onEdit={handleOpenForm}
                                 />
                             ))}
                         </div>
@@ -103,14 +80,12 @@ export default function DeliverablesDetailView({ data, campaignId }) {
                                 <DeliverableDetailCard 
                                     deliverable={deliverable} 
                                     key={deliverable.id} 
-                                    onEdit={handleOpenForm}
                                 />
                             ))}
                         </div>
                     </div>
                 </div>
             </div>
-        </>
         )
     }
 
@@ -128,7 +103,6 @@ export default function DeliverablesDetailView({ data, campaignId }) {
                                 <DeliverableDetailCard 
                                     deliverable={deliverable} 
                                     key={deliverable.id} 
-                                    onEdit={handleOpenForm} 
                                 />
                             ))}
                         </div>  
@@ -144,7 +118,6 @@ export default function DeliverablesDetailView({ data, campaignId }) {
                                 <DeliverableDetailCard 
                                     deliverable={deliverable} 
                                     key={deliverable.id} 
-                                    onEdit={handleOpenForm}
                                 />
                             ))}
                         </div>
@@ -160,7 +133,6 @@ export default function DeliverablesDetailView({ data, campaignId }) {
                                 <DeliverableDetailCard 
                                     deliverable={deliverable} 
                                     key={deliverable.id} 
-                                    onEdit={handleOpenForm}
                                 />
                             ))}
                         </div>

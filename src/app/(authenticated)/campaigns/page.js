@@ -1,9 +1,9 @@
-import { CampaignDataTable } from "@/components/campaign-table/campaign-data-table";
-import { userCampaignColumns } from "@/components/campaign-table/user-column-config/user-campaign-table-columns";
+import { CampaignDataTable } from "@/components/campaigns/campaign-data-table";
+import { userCampaignColumns } from "@/components/campaigns/user-column-config/user-campaign-table-columns";
 import getSelectedAccount from "@/api/GET/permissions/get-selected-account";
 import getCampaignsWithDeliverables from "@/api/GET/core/campaigns/get-campaigns-with-deliverables";
 import getPermissionsModel from "@/api/GET/permissions/get-permissions-model";
-import { adminCampaignColumns } from "@/components/campaign-table/admin-column-config/admin-campaign-table-columns";
+import { adminCampaignColumns } from "@/components/campaigns/admin-column-config/admin-campaign-table-columns";
 
 
 export default async function CampaignsPage() {
