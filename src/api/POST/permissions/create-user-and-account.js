@@ -9,7 +9,7 @@ export default async function createUserAndAccount(data) {
             email: data.email,
             password: data.password,
             options: {
-                emailRedirectTo: 'http://localhost:3000/auth/confirm'
+                emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/confirm`
             }
         })
 

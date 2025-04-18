@@ -11,7 +11,7 @@ export async function signupUser(prevState, formData) {
             email,
             password,
             options: {
-                emailRedirectTo: 'http://localhost:3000/auth/confirm'
+                emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/confirm`
             }
         })
         if (error) {

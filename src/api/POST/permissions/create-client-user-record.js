@@ -80,7 +80,7 @@ export default async function createClientUserRecord(prevState, formData) {
         .auth
         .admin
         .inviteUserByEmail(user_email, {
-            redirectTo: 'http://localhost:3000/auth/invite'
+            redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/invite`
         })
 
         if (inviteError) {

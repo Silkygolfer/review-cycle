@@ -13,12 +13,12 @@ export async function GET(request) {
     const { error } = await supabase.auth.verifyOtp({ token_hash, type });
 
     if (error) {
-      return NextResponse.redirect('http:localhost:3000/auth/error'); // Handle errors
+      return NextResponse.redirect(`${process.env.NEXT_PUBIC_URL}/auth/error`); // Handle errors
     }
 
     // Redirect to the desired page after successful auth
-    return NextResponse.redirect('http:localhost:3000/auth/complete-signup');
+    return NextResponse.redirect(`${process.env.NEXT_PUBIC_URL}/auth/complete-signup`);
   }
 
-  return NextResponse.redirect('http:localhost:3000/auth/error'); // Fallback for invalid params
+  return NextResponse.redirect(`${process.env.NEXT_PUBIC_URL}/auth/error`); // Fallback for invalid params
 }
