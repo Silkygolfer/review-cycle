@@ -51,6 +51,8 @@ export function CampaignDataTable({ columns, data }) {
     const [open, setOpen] = useState(false);
     const [selectedClientId, setSelectedClientId] = useState(null);
     const router = useRouter();
+    console.log('selectedClientId: ', selectedClientId);
+    console.log('data: ', data);
     
     // refresh the page when a change occurs
     const refreshData = () => {

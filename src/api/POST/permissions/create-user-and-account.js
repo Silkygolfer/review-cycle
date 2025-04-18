@@ -13,7 +13,6 @@ export default async function createUserAndAccount(data) {
             }
         })
 
-        console.log('userError: ', userError)
         if (userError) {
             return { success: false, error: userError.message }
         }
