@@ -5,7 +5,7 @@ import { ArrowDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 
-export default function ReviewCycleSelect({ review_cycles, url }) {
+export default function ReviewCycleSelect({ review_cycles }) {
     const router = useRouter();
     return (
         <DropdownMenu>
@@ -24,7 +24,7 @@ export default function ReviewCycleSelect({ review_cycles, url }) {
                         <DropdownMenuItem
                         key={cycle.id} 
                         value={cycle.id}
-                        onClick={() => router.push(`/campaigns/${cycle.id}?url=${url}`)}>
+                        onClick={() => router.push(`/campaigns/${cycle.id}`)}>
                             <div className="flex items-center">
                                 <p className="flex">Review #{index + 1} - {cycle.submitted_at.substring(0, 10)}</p>
                             </div>

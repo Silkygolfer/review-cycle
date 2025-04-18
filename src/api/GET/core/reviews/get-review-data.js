@@ -7,7 +7,7 @@ export default async function getReviewData(review_id) {
     try {
         const { data: reviewData, error: commentError } = await supabase
         .from('review_cycles')
-        .select('*, deliverables(deliverable_content), revision_comments(*)')
+        .select('*, revision_comments(*)')
         .eq('id', review_id)
         .single()
 

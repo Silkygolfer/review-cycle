@@ -61,7 +61,7 @@ export default function SignupForm({
       }
 
       if (result.error) {
-        toast.error('Faied to create account - ' + result.error)
+        toast.error('Failed to create account - ' + result.error)
       }
     } catch (error) {
       toast.error('Error - ' + error)

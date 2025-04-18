@@ -48,7 +48,7 @@ export default async function createClientUserRecord(prevState, formData) {
 
             if (rolesError) {
                 if (rolesError.code === '23505') {
-
+                    return { success: false, error: rolesError.message }
                 } else {
                 return { success: false, error: rolesError.message}
                 }

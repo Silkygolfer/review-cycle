@@ -14,6 +14,7 @@ import FileUploader from "./file-uploader";
 import updateDeliverable from "@/api/PATCH/core/update-deliverable";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { convertYYYYMMDDToUTCDate } from "@/helpers/date-helpers";
 
 const deliverableSchema = z.object({
     deliverable_name: z.string()
@@ -35,6 +36,7 @@ const deliverableSchema = z.object({
 
 
 export default function EditDeliverableForm({ data, refreshData, isOpen, setIsOpen }) {
+    console.log(data.deliverable_due_date)
 
     // get form APIs
     const { register, control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
@@ -44,7 +46,17 @@ export default function EditDeliverableForm({ data, refreshData, isOpen, setIsOp
             deliverable_name: data?.deliverable_name || '',
             deliverable_description: data?.deliverable_description || '',
             deliverable_type: data?.deliverable_type || '',
-            deliverable_due_date: data?.deliverable_due_date ? new Date(data.deliverable_due_date) : new Date(),
+            deliverable_due_date: data?.deliverable_due_date ? 
+            (() => {
+              const date = new Date(data.deliverable_due_date);
+              date.setUTCHours(12, 0, 0, 0); // Set to noon UTC
+              return date;
+            })() : 
+            (() => {
+              const today = new Date();
+              today.setUTCHours(12, 0, 0, 0); // Set to noon UTC
+              return today;
+            })(),
             deliverable_status: data?.deliverable_status || '',
             deliverable_content: data?.deliverable_content || '',
             campaign_id: data.campaign_id
@@ -149,22 +161,27 @@ export default function EditDeliverableForm({ data, refreshData, isOpen, setIsOp
                         <Controller
                             name="deliverable_due_date"
                             control={control}
-                            render={({ field }) => (
+                            render={({ field }) => {
+                                // Add console logs to debug the date values
+                                console.log("Original field value:", field.value);
+                    
+                                return (
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button variant={'outline'}>{field?.value ? field.value.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Select Date"} </Button>
+                                        <Button variant={'outline'}>{field?.value ? field.value.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC'}) : "Select Date"} </Button>
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         <Calendar
                                         mode='single'
-                                        selected={field.value ? new Date(field.value) : undefined}
+                                        selected={field.value}
                                         onSelect={field.onChange}
                                         className={'rounded-md border shadow'}
+                                        timeZone="UTC"
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                
-                            )}
+                                )
+                            }}
                         />
                         {errors.deliverable_due_date && (
                             <p className="text-red-500 text-sm mt-1">{errors.deliverable_due_date.message}</p>

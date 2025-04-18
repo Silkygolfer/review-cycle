@@ -19,7 +19,7 @@ export default function ReviewImageMarker({ reviewData }) {
     const review_id = reviewData.id
 
     // url
-    const url = reviewData.deliverables.deliverable_content
+    const url = reviewData.asset_url
 
     // initialMarkers
     const initialMarkers = reviewData?.revision_comments || []
@@ -70,6 +70,7 @@ export default function ReviewImageMarker({ reviewData }) {
     });
     const containerRef = useRef(null);
     const imageRef = useRef(null);
+    const commentInputRef = useRef(null);
 
     // Function to get image dimensions on load
     function getImageDimensions(url, callback) {
@@ -108,6 +109,13 @@ export default function ReviewImageMarker({ reviewData }) {
         // Show comment input after clicking
         setShowCommentInput(true);
     };
+
+    // useEffect to focus the CommentInput after image click
+    useEffect(() => {
+        if (showCommentInput && commentInputRef.current) {
+          commentInputRef.current.focus();
+        }
+      }, [showCommentInput]);
 
     // Function to add a marker with comment
     const handleAddComment = async () => {
@@ -514,7 +522,9 @@ export default function ReviewImageMarker({ reviewData }) {
                     <h1 className="flex items-center ml-2 p-2">Approve or Submit Revision</h1>
                     <div
                     className="flex ml-auto p-2 flex-wrap">
-                        <SubmitApprovalDialog review_id={review_id}/>
+                        {markers.length === 0 && (
+                            <SubmitApprovalDialog review_id={review_id}/>
+                        )}
                         <SubmitRevisionDialog review_id={review_id} />
                     </div>
                 </div>
@@ -530,7 +540,8 @@ export default function ReviewImageMarker({ reviewData }) {
                 {/* Comment input form */}
                 {showCommentInput && (
                     <div className="flex flex-col w-full border rounded-md">
-                        <textarea 
+                        <textarea
+                            ref={commentInputRef} 
                             className="flex p-2 border rounded-md m-2"
                             rows="3"
                             placeholder="Enter your comment here..."

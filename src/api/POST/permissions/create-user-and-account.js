@@ -12,6 +12,8 @@ export default async function createUserAndAccount(data) {
                 emailRedirectTo: 'http://localhost:3000/auth/confirm'
             }
         })
+
+        console.log('userError: ', userError)
         if (userError) {
             return { success: false, error: userError.message }
         }

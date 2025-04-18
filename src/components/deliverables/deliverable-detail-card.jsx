@@ -32,6 +32,7 @@ import EditDeliverableForm from "./edit-deliverable-form";
 import { useState } from "react";
 
 export default function DeliverableDetailCard({ deliverable }) {
+    console.log('deliverable: ', deliverable)
     // init Router
     const router = useRouter();
 
@@ -107,12 +108,12 @@ export default function DeliverableDetailCard({ deliverable }) {
     }
 
     // Function to start new review process by creating review_cycle record and redirecting to review page
-    const handleStartNewReview = async (deliverable_id) => {
+    const handleStartNewReview = async (deliverable) => {
         try {
-            const result = await createReviewCycle(deliverable_id);
+            const result = await createReviewCycle(deliverable);
             if (result.success) {
                 toast.success('Redirecting to review page...')
-                router.push(`/campaigns/${result.reviewCycle.id}?url=${deliverable.deliverable_content}`)
+                router.push(`/campaigns/${result.reviewCycle.id}`)
             }
             if (result.error) {
                 toast.error('Error starting review: ' + result.error)
@@ -124,7 +125,7 @@ export default function DeliverableDetailCard({ deliverable }) {
 
     // Function to handle pushing to a in-progress review cycle
     const handleContinueReview = (id) => {
-        router.push(`/campaigns/${id}?url=${deliverable.deliverable_content}`)
+        router.push(`/campaigns/${id}`)
     };
 
     // set State for edit form
@@ -305,7 +306,7 @@ export default function DeliverableDetailCard({ deliverable }) {
                                     </Button>
                                 ) : <Button
                                 className={'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 my-2 hover:cursor-pointer'}
-                                onClick={() => handleStartNewReview(deliverable.id)}>
+                                onClick={() => handleStartNewReview(deliverable)}>
                                     <Edit />
                                     Start Review
                                 </Button>}

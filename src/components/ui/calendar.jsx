@@ -11,11 +11,14 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  timeZone,
   ...props
 }) {
+  console.log(props)
   return (
     (<DayPicker
       showOutsideDays={showOutsideDays}
+      timeZone={timeZone}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row gap-2",

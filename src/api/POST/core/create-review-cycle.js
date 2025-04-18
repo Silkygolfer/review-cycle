@@ -1,7 +1,7 @@
 'use server'
 import { createClient } from "@/utils/supabase/server-supabase-instance"
 
-export default async function createReviewCycle(id) {
+export default async function createReviewCycle(deliverable) {
     const supabase = await createClient();
 
     try {
@@ -18,8 +18,9 @@ export default async function createReviewCycle(id) {
         const { data: reviewCycle, error: reviewCycleError } = await supabase
         .from('review_cycles')
         .insert({
-            'deliverable_id': id,
-            'submitted_by': userData.user.id
+            'deliverable_id': deliverable.id,
+            'submitted_by': userData.user.id,
+            'asset_url': deliverable.deliverable_content
         })
         .select('id')
         .single()

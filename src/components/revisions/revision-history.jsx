@@ -37,7 +37,9 @@ export default function ReviewHistory({ reviews }) {
                         reviews.map(review => (
                             <React.Fragment key={review.id}>
                             {review.review_status === 'approved' ? (
-                            <Card className="shadow-sm border-1 border-green-600">
+                            <Card
+                            onClick={() => handleReviewPush(review.id)}
+                            className="shadow-sm border-1 border-green-600 hover:cursor-pointer">
                                 <CardTitle className="text-sm p-4">
                                     {formatDate(review.submitted_at)} - {review.users?.first_name} {review.users?.last_name}
                                 </CardTitle>
