@@ -1,5 +1,4 @@
 function convertYYYYMMDDToUTCDate(dateString) {
-    console.log('dateString: ', dateString);
     
     // Check if the input follows the YYYY-MM-DD format
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {

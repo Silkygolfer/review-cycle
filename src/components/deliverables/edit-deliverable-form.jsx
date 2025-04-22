@@ -36,7 +36,6 @@ const deliverableSchema = z.object({
 
 
 export default function EditDeliverableForm({ data, refreshData, isOpen, setIsOpen }) {
-    console.log(data.deliverable_due_date)
 
     // get form APIs
     const { register, control, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
@@ -162,9 +161,6 @@ export default function EditDeliverableForm({ data, refreshData, isOpen, setIsOp
                             name="deliverable_due_date"
                             control={control}
                             render={({ field }) => {
-                                // Add console logs to debug the date values
-                                console.log("Original field value:", field.value);
-                    
                                 return (
                                 <Popover>
                                     <PopoverTrigger asChild>

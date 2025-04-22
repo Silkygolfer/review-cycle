@@ -1,13 +1,13 @@
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/sections/navbar/default";
-import "./globals.css";
+import "../globals.css";
 
 export const metadata = {
   title: "CmndCenter",
   description: "You're in control.",
 };
 
-export default function RootLayout({ children }) {
+export default function RootPublicLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <body>

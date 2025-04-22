@@ -14,7 +14,6 @@ function Calendar({
   timeZone,
   ...props
 }) {
-  console.log(props)
   return (
     (<DayPicker
       showOutsideDays={showOutsideDays}

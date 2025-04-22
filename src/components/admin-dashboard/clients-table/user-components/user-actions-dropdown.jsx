@@ -27,7 +27,6 @@ export function UserDropdownMenu({ user, client }) {
       router.refresh();
     }
     if (!result.success) {
-      console.log(result.error)
       toast.error('Failed to delete user: ' + result.error)
     }
   };
