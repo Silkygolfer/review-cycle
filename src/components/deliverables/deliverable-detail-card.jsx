@@ -32,7 +32,6 @@ import EditDeliverableForm from "./edit-deliverable-form";
 import { useState } from "react";
 
 export default function DeliverableDetailCard({ deliverable }) {
-    console.log('deliverable: ', deliverable)
     // init Router
     const router = useRouter();
 

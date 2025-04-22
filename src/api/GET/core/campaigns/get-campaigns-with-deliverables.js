@@ -12,7 +12,6 @@ export default async function getCampaignsWithDeliverables(account_id) {
         .order('submitted_at', {ascending: false, referencedTable: 'campaigns.deliverables.review_cycles'})
 
 
-        console.log('campaignError: ', campaignError)
         if (campaignError) {
             return { success: false, error: campaignError.message}
         }
