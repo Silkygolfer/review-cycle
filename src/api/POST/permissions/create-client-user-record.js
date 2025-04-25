@@ -37,8 +37,35 @@ export default async function createClientUserRecord(prevState, formData) {
                 return { success: false, error: userError.message }
             }
 
+            // check to see if user has user_role for this account
+            const { data: userRoleData, error: userRolesError } = await supabase
+            .from('user_roles')
+            .select('*', { count: 1 })
+            .eq('account_id', account_id)
+            .eq('user_id', userData.id)
+
+            if (userRoleData > 0) {
+                console.log('userRoleData: ', userRoleData)
+            } else {
+                const { data: userRoles, error: rolesError } = await supabase
+                .from('user_roles')
+                .insert({
+                    'user_id': userData.id,
+                    'role_id': '833562f8-2b3f-4357-a0e3-31831f512fa6',
+                    'account_id': account_id
+                })
+
+                if (rolesError) {
+                    return { success: false, error: rolesError.message }
+                }
+            }
+
+            if (userRolesError) {
+                return { success: false, error: userRolesError.message }
+            }
+
             // check to see if user has user_role in the correct account
-            const { data: userRole, error: rolesError } = await supabase
+            /* const { data: userRole, error: rolesError } = await supabase
             .from('user_roles')
             .insert({
                 'user_id': userData.id,
@@ -53,6 +80,7 @@ export default async function createClientUserRecord(prevState, formData) {
                 return { success: false, error: rolesError.message}
                 }
             }
+            */
 
             const { data: assignmentData, error: assignmentError } = await supabase
             .from('client_assignments')

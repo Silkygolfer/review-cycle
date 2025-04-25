@@ -12,7 +12,7 @@ export default async function updateUserSelectedAccount(accountId) {
     
     const { error } = await supabase
         .from('users')
-        .update({ selected_account_id: accountId })
+        .update({ primary_account: accountId })
         .eq('id', user.id);
     
     if (error) {

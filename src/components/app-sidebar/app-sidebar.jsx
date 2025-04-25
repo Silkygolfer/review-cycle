@@ -27,6 +27,7 @@ export async function AppSidebar() {
     // get selectedAccount -> tranform then pass to AppSideHeader for Account Selection
     const { selectedAccount } = await getSelectedAccount();
 
+
     // create selectedAccount object to pass to AppSidebarHeader for selectedAccount state
     const selectedAccountObj = {
         'id': selectedAccount.accounts.id,
@@ -40,7 +41,7 @@ export async function AppSidebar() {
     if (!userData.is_super_admin) {
         // map the role to the selectedAccount by account_id
         const selectedAccountRoleObject = selectedAccount.user_roles.find(
-        role => role.account_id === userData.selected_account_id
+        role => role.account_id === userData.primary_account
         );
         // get role name as string from mapped roles -> accounts. Pass to AppSidebarFooter for UI
         userRole = selectedAccountRoleObject.roles.name;

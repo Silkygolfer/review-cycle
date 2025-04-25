@@ -19,6 +19,9 @@ export default async function getProfile() {
         .eq("id", user.user.id)
         .single();
 
+        console.log('userData: ', userData)
+        console.log('userDataError: ', userDataError)
+
         if (userDataError) {
             return { success: false, error: userDataError.message}
         }

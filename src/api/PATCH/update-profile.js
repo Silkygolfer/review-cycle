@@ -9,13 +9,14 @@ export default async function updateProfile(prevState, formData) {
     try {
         const supabase = await createClient();
 
-        const { error } = await supabase.from('users').update({
+        const { data: userData, error: userError } = await supabase.from('users').update({
             first_name: first_name,
             last_name: last_name
         }).eq('id', id)
+        .select()
 
-        if (error) {
-            return { success: false, error: error.message };
+        if (userError) {
+            return { success: false, error: userError.message };
         }
         return { success: true };
     } catch (error) {
